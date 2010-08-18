@@ -1,0 +1,7 @@
+# GitBot
+
+This simple java app uses Runtime.getRuntime().exec() to run git commands and parse output as status.
+
+This is for my CSCI-2912 Java final project.
+
+Screenshots coming when i get em.

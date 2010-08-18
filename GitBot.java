@@ -3,6 +3,7 @@ import javax.swing.JButton;
 import javax.swing.JToolBar;
 import java.awt.Dimension;
 import java.awt.Container;
+import java.awt.BorderLayout;
 public class GitBot{
 	private static final String APP_TITLE = "GitBot";
 	private static final String APP_VERSION = "v0.1";
@@ -45,12 +46,13 @@ public class GitBot{
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
-		frame.setMinimumSize(new Dimension(250, 125));
+		frame.setMinimumSize(new Dimension(500, 400));
 		frame.setPreferredSize(new Dimension(500, 400));;
 		pane = frame.getContentPane();
+		pane.setLayout(new BorderLayout());
 		
 		toolBar = new JToolBar();
-		pane.add(toolBar);
+		pane.add(toolBar,BorderLayout.SOUTH);
 		
 		// buttons for ui
 		refreshBut = new JButton(REFRESH_BUT_LABEL);
@@ -68,13 +70,15 @@ public class GitBot{
 		pushAllBut = new JButton(PUSH_ALL_BUT_LABEL);
 		toolBar.add(pushAllBut);
 		
+		// setup table
+		tableView = new TableView(gitBot);
+		pane.add(tableView.table.getTableHeader(), BorderLayout.PAGE_START);
+		pane.add(tableView.table, BorderLayout.CENTER);
+		
 		// setup scanner
 		inspector = new Inspector(gitBot);
 		
-		// setup table
-		tableView = new TableView(gitBot);
-		
-		
+		tableView.data.setValueAt("hello", 0, 0);
 		
 	}
 }

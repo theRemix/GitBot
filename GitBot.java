@@ -5,6 +5,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JTextArea;
 import javax.swing.JScrollPane;
 import javax.swing.BoxLayout;
+import javax.swing.SwingUtilities;
 import java.awt.Dimension;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
@@ -30,8 +31,12 @@ public class GitBot implements ActionListener{
 	
 	public static void main(String[] args) 
     {
-		GitBot gitBot = GitBot.getInstance();
-        gitBot.init();
+		SwingUtilities.invokeLater(new Runnable() {
+			GitBot gitBot = GitBot.getInstance();
+			public void run() {
+		        gitBot.init();
+		    }
+		});
 	}
 	public static GitBot getInstance(){
 		if(instance == null){
@@ -70,7 +75,9 @@ public class GitBot implements ActionListener{
 		System.out.print(path);
 	}
 	
-	public void init(){
+	
+	//http://download.oracle.com/javase/tutorial/uiswing/examples/components/SimpleTableDemoProject/src/components/SimpleTableDemo.java
+	private void init(){
 		GitBot gitBot = GitBot.getInstance();
 		
 		// setup ui
@@ -89,6 +96,7 @@ public class GitBot implements ActionListener{
 		// buttons for ui
 		refreshBut = new JButton(REFRESH_BUT_LABEL);
 		toolBar.add(refreshBut);
+		refreshBut.addActionListener(this);
 		
 		pullBut = new JButton(PULL_BUT_LABEL);
 		toolBar.add(pullBut);
@@ -113,8 +121,8 @@ public class GitBot implements ActionListener{
 		pane.add(tableScrollPane);
 		tableView.table.setFillsViewportHeight(true);
 		
-		
 		statusTextArea = new JTextArea(ROBOT_SAYS + APP_TITLE + " " + APP_VERSION);
+		statusTextArea.setEditable(false);
 		JScrollPane statusScrollPane = new JScrollPane(statusTextArea);
 		pane.add(statusScrollPane);
 		
@@ -123,13 +131,14 @@ public class GitBot implements ActionListener{
 		readSettings();
 		
 		tableView.data.setValueAt("hello", 0, 0);
-		
 	}
 	
 	public void actionPerformed(ActionEvent e) {
         if (e.getSource() == settingsBut) {
 			askUserToSetPath();
-        }
+        }else if(e.getSource() == refreshBut){
+			inspector.scan(path);
+		}
 	}
 	
 	private void askUserToSetPath(){
@@ -153,6 +162,7 @@ public class GitBot implements ActionListener{
 			outputFile.close();
 		}catch (java.io.FileNotFoundException err){
 			robotLog("Failed to save new path configuration to "+SETTINGS_FILE_PATH+" please try again.");
+			robotLog(err.getMessage());
 		}
 		
 		robotLog("Projects path is "+path);
@@ -161,8 +171,13 @@ public class GitBot implements ActionListener{
 	
 	public void showLog(String message){
 		statusTextArea.append("\n"+message);
+		updateCaret();
 	}
 	public void robotLog(String message){
 		statusTextArea.append("\n"+ROBOT_SAYS+message);
+		updateCaret();
+	}
+	private void updateCaret(){
+		statusTextArea.setCaretPosition(statusTextArea.getText().length());
 	}
 }

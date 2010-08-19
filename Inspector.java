@@ -1,9 +1,8 @@
 import java.io.*;
+import java.lang.InterruptedException;
 class Inspector{
 	private GitBot gitBot;
-	private OutputStream stdin = null;
-	private InputStream stderr = null;
-	private InputStream stdout = null;
+	private Process process;
 	
 	public Inspector(GitBot _gitBot)
 	{
@@ -13,30 +12,42 @@ class Inspector{
 	
 	public void scan(String path){
 		try{
+			process = Runtime.getRuntime().exec("/bin/bash");
+			
 			String line;
-			Process process = Runtime.getRuntime().exec("/bin/bash");
-			stdin = process.getOutputStream ();
-			stderr = process.getErrorStream ();
-			stdout = process.getInputStream ();
-		
-			line = "cd "+ path + "\nls\n";   
-		    stdin.write(line.getBytes() );
-		    stdin.flush();
+			
+			line = "cd "+ path + "\nls\n";
+		    process.getOutputStream().write(line.getBytes() );
+		    process.getOutputStream().flush();
 			
 			gitBot.robotLog("Listing directories");
 			
-			BufferedReader input = new BufferedReader(new InputStreamReader(stdout));
+			gitBot.tableView.clear();
+			
+			BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			while ((line = input.readLine()) != null) {
 				updateStatus(path+"/"+line);
 				gitBot.showLog(line);
 			}
-			input.close();
+			try{
+				process.waitFor();
+			}catch(InterruptedException err){
+				gitBot.robotLog("Inspector.process.waitFor() " + err.getMessage());
+			}
+			process.destroy();
+				
 		}catch (IOException err) { 
-			//gitBot.robotLog(err);
+			gitBot.robotLog("Inspector.scan " + err.getMessage());
 		}
 	}
 	
 	public void updateStatus(String path){
-		
+		String line = "cd "+ path + "\ngit status\n";   
+		try{
+		    process.getOutputStream().write( line.getBytes() );
+		    process.getOutputStream().flush();
+		}catch (IOException err) { 
+			gitBot.robotLog("Inspector.updateStatus("+path+")" + err.getMessage());
+		}
 	}
 }

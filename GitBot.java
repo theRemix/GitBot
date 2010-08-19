@@ -48,6 +48,8 @@ public class GitBot implements ActionListener{
 	public void init(){
 		GitBot gitBot = GitBot.getInstance();
 		
+		path = "/Users/theRemix/Projects"; // for debug
+		
 		// setup ui
         JFrame frame = new JFrame(APP_TITLE + " " + APP_VERSION);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -88,6 +90,7 @@ public class GitBot implements ActionListener{
 		
 		// setup scanner
 		inspector = new Inspector(gitBot);
+		inspector.scan(path);
 		
 		tableView.data.setValueAt("hello", 0, 0);
 		

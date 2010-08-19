@@ -8,6 +8,8 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.PrintWriter;
+import java.util.Scanner;
 public class GitBot implements ActionListener{
 	private static final String APP_TITLE = "GitBot";
 	private static final String APP_VERSION = "v0.1";
@@ -17,12 +19,14 @@ public class GitBot implements ActionListener{
 	private static final String PUSH_BUT_LABEL = "Push";
 	private static final String PUSH_ALL_BUT_LABEL = "Push All";
 	private static final String SETTINGS_FILE_CHOOSER_TITLE = "Choose Directory that contains all your git projects";
+	private static final String SETTINGS_FILE_PATH = ".projectsPath";
 	
 	private static GitBot instance;
 	
 	public static void main(String[] args) 
     {
 		GitBot gitBot = GitBot.getInstance();
+		gitBot.readSettings();
         gitBot.init();
 	}
 	public static GitBot getInstance(){
@@ -44,6 +48,22 @@ public class GitBot implements ActionListener{
 	private JButton pushBut;
 	private JButton pushAllBut;
 	private JButton	settingsBut; // temp? want this in File... menu
+	
+	public void readSettings(){
+		String readpath = "";
+		try{
+			File file = new File(SETTINGS_FILE_PATH);
+			Scanner inputFile = new Scanner(file);
+			if (inputFile.hasNext())
+				readpath = inputFile.nextLine();
+			inputFile.close();
+		
+			if(readpath == "") askUserToSetPath();
+			else setNewPath(readpath);
+		}catch (java.io.FileNotFoundException err){ askUserToSetPath(); }
+		
+		System.out.print(path);
+	}
 	
 	public void init(){
 		GitBot gitBot = GitBot.getInstance();
@@ -82,7 +102,7 @@ public class GitBot implements ActionListener{
 		settingsBut = new JButton("Settings");
 		settingsBut.addActionListener(this);
 		toolBar.add(settingsBut);
-		
+				
 		// setup table
 		tableView = new TableView(gitBot);
 		pane.add(tableView.table.getTableHeader(), BorderLayout.PAGE_START);
@@ -121,5 +141,13 @@ public class GitBot implements ActionListener{
 	
 	private void setNewPath(String _path){
 		path = _path;
+		
+		try{
+			PrintWriter outputFile = new PrintWriter(SETTINGS_FILE_PATH);
+			outputFile.println(path);
+			outputFile.close();
+		}catch (java.io.FileNotFoundException err){
+			// alert user that the settings file failed to write
+		}
 	}
 }

@@ -3,9 +3,10 @@ import javax.swing.JButton;
 import javax.swing.JToolBar;
 import javax.swing.JFileChooser;
 import javax.swing.JTextArea;
+import javax.swing.JScrollPane;
+import javax.swing.BoxLayout;
 import java.awt.Dimension;
 import java.awt.Container;
-import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -80,10 +81,10 @@ public class GitBot implements ActionListener{
 		frame.setMinimumSize(new Dimension(APP_INIT_WIDTH, APP_INIT_HEIGHT));
 		frame.setPreferredSize(new Dimension(APP_INIT_WIDTH, APP_INIT_HEIGHT));;
 		pane = frame.getContentPane();
-		pane.setLayout(new BorderLayout());
+		pane.setLayout(new BoxLayout(pane, BoxLayout.PAGE_AXIS));
 		
 		toolBar = new JToolBar();
-		pane.add(toolBar,BorderLayout.SOUTH);
+		pane.add(toolBar);
 		
 		// buttons for ui
 		refreshBut = new JButton(REFRESH_BUT_LABEL);
@@ -107,11 +108,15 @@ public class GitBot implements ActionListener{
 		
 		// setup table
 		tableView = new TableView(gitBot);
-		pane.add(tableView.table.getTableHeader(), BorderLayout.PAGE_START);
-		pane.add(tableView.table, BorderLayout.CENTER);
+		JScrollPane tableScrollPane = new JScrollPane(tableView.table);
+		tableScrollPane.add(tableView.table.getTableHeader());
+		pane.add(tableScrollPane);
+		tableView.table.setFillsViewportHeight(true);
+		
 		
 		statusTextArea = new JTextArea(ROBOT_SAYS + APP_TITLE + " " + APP_VERSION);
-		pane.add(statusTextArea, BorderLayout.CENTER);
+		JScrollPane statusScrollPane = new JScrollPane(statusTextArea);
+		pane.add(statusScrollPane);
 		
 		// setup scanner
 		inspector = new Inspector(gitBot);
@@ -147,7 +152,7 @@ public class GitBot implements ActionListener{
 			outputFile.println(path);
 			outputFile.close();
 		}catch (java.io.FileNotFoundException err){
-			robotLog("Failed to save new path configuration to "_SETTINGS_FILE_PATH+" please try again.");
+			robotLog("Failed to save new path configuration to "+SETTINGS_FILE_PATH+" please try again.");
 		}
 		
 		robotLog("Projects path is "+path);

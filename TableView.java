@@ -23,8 +23,6 @@ class TableView {
 		data = new DefaultTableModel(columnNames, 2);
 		
 		table = new JTable(data);
-		JScrollPane scrollPane = new JScrollPane(table);
-		table.setFillsViewportHeight(true);
 		
 	}
 }

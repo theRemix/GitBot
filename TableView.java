@@ -25,4 +25,11 @@ class TableView {
 		table = new JTable(data);
 		
 	}
+	
+	public void clear()
+	{
+		for(int i=0;i<data.getRowCount();i++){
+			data.removeRow(i);
+		}
+	}
 }

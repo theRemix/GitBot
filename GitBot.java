@@ -174,7 +174,9 @@ public class GitBot implements ActionListener{
 		updateCaret();
 	}
 	public void robotLog(String message){
-		statusTextArea.append("\n"+ROBOT_SAYS+message);
+		String msg = "\n"+ROBOT_SAYS+message;
+		statusTextArea.append(msg);
+		System.out.println(msg);
 		updateCaret();
 	}
 	private void updateCaret(){

@@ -2,6 +2,7 @@ import javax.swing.JFrame;
 import javax.swing.JButton;
 import javax.swing.JToolBar;
 import javax.swing.JFileChooser;
+import javax.swing.JTextArea;
 import java.awt.Dimension;
 import java.awt.Container;
 import java.awt.BorderLayout;
@@ -20,13 +21,15 @@ public class GitBot implements ActionListener{
 	private static final String PUSH_ALL_BUT_LABEL = "Push All";
 	private static final String SETTINGS_FILE_CHOOSER_TITLE = "Choose Directory that contains all your git projects";
 	private static final String SETTINGS_FILE_PATH = ".projectsPath";
+	private static final int APP_INIT_WIDTH = 500;
+	private static final int APP_INIT_HEIGHT = 600;
+	private static final String ROBOT_SAYS = "~+> ";
 	
 	private static GitBot instance;
 	
 	public static void main(String[] args) 
     {
 		GitBot gitBot = GitBot.getInstance();
-		gitBot.readSettings();
         gitBot.init();
 	}
 	public static GitBot getInstance(){
@@ -48,6 +51,7 @@ public class GitBot implements ActionListener{
 	private JButton pushBut;
 	private JButton pushAllBut;
 	private JButton	settingsBut; // temp? want this in File... menu
+	private JTextArea statusTextArea;
 	
 	public void readSettings(){
 		String readpath = "";
@@ -68,15 +72,13 @@ public class GitBot implements ActionListener{
 	public void init(){
 		GitBot gitBot = GitBot.getInstance();
 		
-		path = "/Users/theRemix/Projects"; // for debug
-		
 		// setup ui
         JFrame frame = new JFrame(APP_TITLE + " " + APP_VERSION);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
-		frame.setMinimumSize(new Dimension(500, 400));
-		frame.setPreferredSize(new Dimension(500, 400));;
+		frame.setMinimumSize(new Dimension(APP_INIT_WIDTH, APP_INIT_HEIGHT));
+		frame.setPreferredSize(new Dimension(APP_INIT_WIDTH, APP_INIT_HEIGHT));;
 		pane = frame.getContentPane();
 		pane.setLayout(new BorderLayout());
 		
@@ -102,15 +104,18 @@ public class GitBot implements ActionListener{
 		settingsBut = new JButton("Settings");
 		settingsBut.addActionListener(this);
 		toolBar.add(settingsBut);
-				
+		
 		// setup table
 		tableView = new TableView(gitBot);
 		pane.add(tableView.table.getTableHeader(), BorderLayout.PAGE_START);
 		pane.add(tableView.table, BorderLayout.CENTER);
 		
+		statusTextArea = new JTextArea(ROBOT_SAYS + APP_TITLE + " " + APP_VERSION);
+		pane.add(statusTextArea, BorderLayout.CENTER);
+		
 		// setup scanner
 		inspector = new Inspector(gitBot);
-		inspector.scan(path);
+		readSettings();
 		
 		tableView.data.setValueAt("hello", 0, 0);
 		
@@ -131,12 +136,7 @@ public class GitBot implements ActionListener{
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
 			setNewPath(file.getAbsolutePath());
-            //This is where a real application would open the file.
-            //log.append("Opening: " + file.getName() + ".\n");
-        }// else {
-            //log.append("Open command cancelled by user.\n");
-        //}
-        //log.setCaretPosition(log.getDocument().getLength());
+        }
 	}
 	
 	private void setNewPath(String _path){
@@ -147,7 +147,17 @@ public class GitBot implements ActionListener{
 			outputFile.println(path);
 			outputFile.close();
 		}catch (java.io.FileNotFoundException err){
-			// alert user that the settings file failed to write
+			robotLog("Failed to save new path configuration to "_SETTINGS_FILE_PATH+" please try again.");
 		}
+		
+		robotLog("Projects path is "+path);
+		inspector.scan(path);
+	}
+	
+	public void showLog(String message){
+		statusTextArea.append("\n"+message);
+	}
+	public void robotLog(String message){
+		statusTextArea.append("\n"+ROBOT_SAYS+message);
 	}
 }

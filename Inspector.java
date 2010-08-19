@@ -22,16 +22,21 @@ class Inspector{
 			line = "cd "+ path + "\nls\n";   
 		    stdin.write(line.getBytes() );
 		    stdin.flush();
-		
-			// line = "ls -lah" + "\n";   
-			// 		    stdin.write(line.getBytes() );
-			// 		    stdin.flush();
-	
-			BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			
+			gitBot.robotLog("Listing directories");
+			
+			BufferedReader input = new BufferedReader(new InputStreamReader(stdout));
 			while ((line = input.readLine()) != null) {
-				System.out.println(line);
+				updateStatus(path+"/"+line);
+				gitBot.showLog(line);
 			}
-			input.close();		
-		}catch (IOException err) { err.printStackTrace(); }
+			input.close();
+		}catch (IOException err) { 
+			//gitBot.robotLog(err);
+		}
+	}
+	
+	public void updateStatus(String path){
+		
 	}
 }

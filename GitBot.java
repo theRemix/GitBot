@@ -24,8 +24,12 @@ public class GitBot implements ActionListener{
 	private static final String PUSH_ALL_BUT_LABEL = "Push All";
 	private static final String SETTINGS_FILE_CHOOSER_TITLE = "Choose Directory that contains all your git projects";
 	private static final String SETTINGS_FILE_PATH = ".projectsPath";
-	private static final int APP_INIT_WIDTH = 500;
-	private static final int APP_INIT_HEIGHT = 600;
+	private static final int APP_MIN_WIDTH = 200;
+	private static final int APP_MIN_HEIGHT = 150;
+	private static final int APP_INIT_WIDTH = 550;
+	private static final int APP_INIT_HEIGHT = 450;
+	private static final int APP_INIT_X = 300;
+	private static final int APP_INIT_Y = 250;
 	private static final String ROBOT_SAYS = "~+> ";
 	
 	private static GitBot instance;
@@ -89,8 +93,10 @@ public class GitBot implements ActionListener{
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
-		frame.setMinimumSize(new Dimension(APP_INIT_WIDTH, APP_INIT_HEIGHT));
+		frame.setMinimumSize(new Dimension(APP_MIN_WIDTH, APP_MIN_HEIGHT));
 		frame.setPreferredSize(new Dimension(APP_INIT_WIDTH, APP_INIT_HEIGHT));;
+		frame.setLocation(APP_INIT_X,APP_INIT_Y);
+		frame.setSize(APP_INIT_WIDTH, APP_INIT_HEIGHT);
 		pane = frame.getContentPane();
 		pane.setLayout(new BorderLayout());
 		

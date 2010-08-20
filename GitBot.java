@@ -156,7 +156,7 @@ public class GitBot implements ActionListener{
         if (e.getSource() == settingsBut) {
 			askUserToSetPath();
         }else if(e.getSource() == refreshBut){
-			inspector.scan(path);
+			inspector.scan(path, true);
 		}else if(e.getSource() == statusBut){
 			getStatus();
 		}else if(e.getSource() == pullBut){

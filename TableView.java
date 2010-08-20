@@ -39,7 +39,8 @@ class TableView {
 	
 	public void clear()
 	{
-		for(int i=0;i<data.getRowCount();i++){
+		int l = data.getRowCount();
+		for(int i=l-1;i>0;i--){
 			data.removeRow(i);
 		}
 	}

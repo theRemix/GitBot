@@ -115,7 +115,14 @@ class Inspector{
 			
 			if(!branch.equals("")){
 				Object[] row = { projectName, branch, projectStatus };
-				gitBot.tableView.data.addRow(row);
+				// replace blank row
+				if(gitBot.tableView.data.getValueAt(0,0) == null){
+					gitBot.tableView.data.setValueAt(row[0],0,0);
+					gitBot.tableView.data.setValueAt(row[1],0,1);
+					gitBot.tableView.data.setValueAt(row[2],0,2);
+				}else{
+					gitBot.tableView.data.addRow(row);
+				}
 			}
 			
 			if(!quiet) gitBot.robotLog("Scanning Complete! ");

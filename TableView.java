@@ -4,6 +4,7 @@ import javax.swing.table.DefaultTableModel;
 import java.util.Vector;
 class TableView {
 	private static final String REPO_COLUMN_LABEL = "Project Name";
+	private static final String BRANCH_COLUMN_LABEL = "Current Branch";
 	private static final String STATUS_COLUMN_LABEL = "Status";
 	
 	private Vector columnNames;
@@ -18,12 +19,19 @@ class TableView {
 		
 		columnNames = new Vector();
 		columnNames.addElement(REPO_COLUMN_LABEL);
+		columnNames.addElement(BRANCH_COLUMN_LABEL);
 		columnNames.addElement(STATUS_COLUMN_LABEL);
 		
 		data = new DefaultTableModel(columnNames, 2);
 		
-		table = new JTable(data);
-		
+		// http://forums.sun.com/thread.jspa?threadID=427894
+		table = new JTable(data){
+			public boolean isCellEditable(int row, int column)
+			{
+				return false;
+			}
+		};
+		table.setFillsViewportHeight(true);
 	}
 	
 	public void clear()

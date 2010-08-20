@@ -4,12 +4,13 @@ import javax.swing.JToolBar;
 import javax.swing.JFileChooser;
 import javax.swing.JTextArea;
 import javax.swing.JScrollPane;
-import javax.swing.BoxLayout;
 import javax.swing.SwingUtilities;
+import javax.swing.JSplitPane;
 import java.awt.Dimension;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.BorderLayout;
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.Scanner;
@@ -88,10 +89,10 @@ public class GitBot implements ActionListener{
 		frame.setMinimumSize(new Dimension(APP_INIT_WIDTH, APP_INIT_HEIGHT));
 		frame.setPreferredSize(new Dimension(APP_INIT_WIDTH, APP_INIT_HEIGHT));;
 		pane = frame.getContentPane();
-		pane.setLayout(new BoxLayout(pane, BoxLayout.PAGE_AXIS));
+		pane.setLayout(new BorderLayout());
 		
 		toolBar = new JToolBar();
-		pane.add(toolBar);
+		pane.add(toolBar, BorderLayout.PAGE_END);
 		
 		// buttons for ui
 		refreshBut = new JButton(REFRESH_BUT_LABEL);
@@ -117,20 +118,27 @@ public class GitBot implements ActionListener{
 		// setup table
 		tableView = new TableView(gitBot);
 		JScrollPane tableScrollPane = new JScrollPane(tableView.table);
-		tableScrollPane.add(tableView.table.getTableHeader());
-		pane.add(tableScrollPane);
-		tableView.table.setFillsViewportHeight(true);
+		pane.add(tableView.table.getTableHeader(), BorderLayout.PAGE_START);
 		
 		statusTextArea = new JTextArea(ROBOT_SAYS + APP_TITLE + " " + APP_VERSION);
 		statusTextArea.setEditable(false);
 		JScrollPane statusScrollPane = new JScrollPane(statusTextArea);
-		pane.add(statusScrollPane);
+		
+		JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, tableScrollPane, statusScrollPane);
+		splitPane.setOneTouchExpandable(true);
+		splitPane.setDividerLocation(250);
+
+		//Provide minimum sizes for the two components in the split pane
+		Dimension minimumSize = new Dimension(100, 150);
+		tableView.table.setMinimumSize(minimumSize);
+		statusScrollPane.setMinimumSize(minimumSize);
+		
+		pane.add(splitPane, BorderLayout.CENTER);
+		
 		
 		// setup scanner
 		inspector = new Inspector(gitBot);
 		readSettings();
-		
-		tableView.data.setValueAt("hello", 0, 0);
 	}
 	
 	public void actionPerformed(ActionEvent e) {

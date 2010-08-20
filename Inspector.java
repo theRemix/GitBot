@@ -78,29 +78,31 @@ class Inspector{
 				if(line.startsWith("# On branch ")){
 					branch = line.substring(12);
 				}else{
-					if(line.startsWith("nothing to commit (working directory clean)")){
+					if(line.startsWith("#	modified")){
+						countModified++;
+					}
+					if(line.startsWith("# Your branch is ahead")){
+						versionsAhead = Integer.parseInt(line.substring(line.lastIndexOf("by ")+3, line.lastIndexOf(" commit")));
+						// gitBot.robotLog(line);
+						// gitBot.robotLog(Integer.toString(line.length()));
+						// gitBot.robotLog(Integer.toString());
+						// gitBot.robotLog(Integer.toString(line.lastIndexOf(" commit")));
+						projectStatus = STATE_HAS_COMMITS_TO_PUSH;
+					}
+					if(line.startsWith("# Changes to be committed") && 
+						projectStatus != STATE_HAS_COMMITS_TO_PUSH){
+						projectStatus = STATE_HAS_CHANGES_TO_COMMIT;
+					}
+					if(line.startsWith("# Changed but not updated")  && 
+						projectStatus != STATE_HAS_COMMITS_TO_PUSH  && 
+						projectStatus != STATE_HAS_CHANGES_TO_COMMIT){
+						projectStatus = STATE_HAS_CHANGES;
+					}
+					if(line.startsWith("nothing to commit (working directory clean)") &&
+						projectStatus != STATE_HAS_COMMITS_TO_PUSH  && 
+						projectStatus != STATE_HAS_CHANGES_TO_COMMIT &&
+						projectStatus != STATE_HAS_CHANGES){
 						projectStatus = STATE_CLEAN;
-					}else{
-						if(line.startsWith("#	modified")){
-							countModified++;
-						}
-						if(line.startsWith("# Your branch is ahead")){
-							versionsAhead = Integer.parseInt(line.substring(line.lastIndexOf("by ")+3, line.lastIndexOf(" commit")));
-							// gitBot.robotLog(line);
-							// gitBot.robotLog(Integer.toString(line.length()));
-							// gitBot.robotLog(Integer.toString());
-							// gitBot.robotLog(Integer.toString(line.lastIndexOf(" commit")));
-							projectStatus = STATE_HAS_COMMITS_TO_PUSH;
-						}
-						if(line.startsWith("# Changes to be committed") && 
-							projectStatus != STATE_HAS_COMMITS_TO_PUSH){
-							projectStatus = STATE_HAS_CHANGES_TO_COMMIT;
-						}
-						if(line.startsWith("# Changed but not updated")  && 
-							projectStatus != STATE_HAS_COMMITS_TO_PUSH  && 
-							projectStatus != STATE_HAS_CHANGES_TO_COMMIT){
-							projectStatus = STATE_HAS_CHANGES;
-						}
 					}
 				} 	
 			}

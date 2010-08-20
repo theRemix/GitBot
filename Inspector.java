@@ -5,6 +5,7 @@ class Inspector{
 	private static final String STATE_CLEAN = "Clean!";
 	private static final String STATE_HAS_CHANGES = "Has Modified Files ";
 	private static final String STATE_HAS_CHANGES_TO_COMMIT = "Has Files Added to Commit ";
+	private static final String STATE_HAS_COMMITS_TO_PUSH = "Has Commits to Push! ";
 	
 	private GitBot gitBot;
 	private Process process;
@@ -58,6 +59,7 @@ class Inspector{
 		String branch = "";
 		String projectStatus = "";
 		int countModified = 0;
+		int versionsAhead = 0;
 		try{
 			process = Runtime.getRuntime().exec("/bin/bash");
 			
@@ -82,18 +84,33 @@ class Inspector{
 						if(line.startsWith("#	modified")){
 							countModified++;
 						}
-						if(line.startsWith("# Changes to be committed")){
-							projectStatus += STATE_HAS_CHANGES_TO_COMMIT;
+						if(line.startsWith("# Your branch is ahead")){
+							versionsAhead = Integer.parseInt(line.substring(line.lastIndexOf("by ")+3, line.lastIndexOf(" commit")));
+							// gitBot.robotLog(line);
+							// gitBot.robotLog(Integer.toString(line.length()));
+							// gitBot.robotLog(Integer.toString());
+							// gitBot.robotLog(Integer.toString(line.lastIndexOf(" commit")));
+							projectStatus = STATE_HAS_COMMITS_TO_PUSH;
 						}
-						if(line.startsWith("# Changed but not updated")){
-							projectStatus += STATE_HAS_CHANGES;
+						if(line.startsWith("# Changes to be committed") && 
+							projectStatus != STATE_HAS_COMMITS_TO_PUSH){
+							projectStatus = STATE_HAS_CHANGES_TO_COMMIT;
+						}
+						if(line.startsWith("# Changed but not updated")  && 
+							projectStatus != STATE_HAS_COMMITS_TO_PUSH  && 
+							projectStatus != STATE_HAS_CHANGES_TO_COMMIT){
+							projectStatus = STATE_HAS_CHANGES;
 						}
 					}
 				} 	
 			}
 			
 			if(countModified>0){
-				projectStatus += "("+String.valueOf(countModified)+")";
+				if(projectStatus == STATE_HAS_COMMITS_TO_PUSH){
+					projectStatus += "("+String.valueOf(versionsAhead)+")";
+				}else{
+					projectStatus += "("+String.valueOf(countModified)+")";
+				}
 			}
 			
 			if(!branch.equals("")){

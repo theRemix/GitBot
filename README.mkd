@@ -5,13 +5,13 @@ This is for my CSCI-2912 Java final project.
 
 Can also run simple git commands
 
-+ *Refresh* - refreshes status on all projects
-+ *Status* - displays output of _git status_ on selected project(s)
-+ *Pull* - _git pull_ on selected project(s)
-+ *Pull All* - _git pull_ on all projects
-+ *Push* - _git push_ on selected project(s)
-+ *Push All* - _git push_ on all projects
-+ *Settings* - choose the directory that holds all your git projects
++ **Refresh** - refreshes status on all projects
++ **Status** - displays output of _git status_ on selected project(s)
++ **Pull** - _git pull_ on selected project(s)
++ **Pull All** - _git pull_ on all projects
++ **Push** - _git push_ on selected project(s)
++ **Push All** - _git push_ on all projects
++ **Settings** - choose the directory that holds all your git projects
 
 Splash screen created by [pnpnt](http://pnpnt.com)  
 ![Splash screen for GitBot](http://remixtechnology.com/assets/2010/8/20/splash.png)

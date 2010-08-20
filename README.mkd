@@ -1,7 +1,26 @@
 # GitBot
 
-This simple java app uses Runtime.getRuntime().exec() to run git commands and parse output as status.
-
+This simple java app uses Runtime.getRuntime().exec() to run git commands and parse output as status.  
 This is for my CSCI-2912 Java final project.
 
-Screenshots coming when i get em.
+Can also run simple git commands
+
++ *Refresh* - refreshes status on all projects
++ *Status* - displays output of _git status_ on selected project(s)
++ *Pull* - _git pull_ on selected project(s)
++ *Pull All* - _git pull_ on all projects
++ *Push* - _git push_ on selected project(s)
++ *Push All* - _git push_ on all projects
++ *Settings* - choose the directory that holds all your git projects
+
+
+Screenshot of GitBot v0.1
+![Screenshot of GitBot v0.1](http://remixtechnology.com/assets/2010/8/20/Screen_shot_2010-08-20_at_12.25.08_AM.png)
+
+## ToDo  
++ Add splash screen
++ Use nohup to see if i can refresh all repos simultaneously
++ Make Jar file
++ Add an app icon
++ Non clean projects have different row colors 
++ Open project in term or GitX

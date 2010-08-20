@@ -2,6 +2,7 @@ import javax.swing.JTable;
 import javax.swing.JScrollPane;
 import javax.swing.table.DefaultTableModel;
 import java.util.Vector;
+import java.awt.Color;
 class TableView {
 	private static final String REPO_COLUMN_LABEL = "Project Name";
 	private static final String BRANCH_COLUMN_LABEL = "Current Branch";
@@ -32,6 +33,8 @@ class TableView {
 			}
 		};
 		table.setFillsViewportHeight(true);
+		table.setSelectionForeground(Color.BLACK);
+		table.setSelectionBackground(Color.ORANGE);
 	}
 	
 	public void clear()

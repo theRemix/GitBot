@@ -17,10 +17,17 @@ class Inspector{
 	}
 	
 	public void scan(String path){
+		scanProjects(path, true);
+	}
+	public void scan(String path, Boolean verbose){
+		scanProjects(path, !verbose);
+	}
+	
+	private void scanProjects(String path, Boolean quiet){
 		try{
 			process = Runtime.getRuntime().exec("/bin/bash");
 			
-			gitBot.robotLog("Listing directories");
+			if(!quiet) gitBot.robotLog("Listing directories");
 			
 			gitBot.tableView.clear();
 			ArrayList<String> projects = new ArrayList<String>();
@@ -30,14 +37,14 @@ class Inspector{
 		    process.getOutputStream().flush();
 			BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			while ((line = input.readLine()) != null) {
-				gitBot.robotLog(line);
+				if(!quiet) gitBot.robotLog(line);
 				projects.add(line);
 			}
 			closeProcess();
 			
 			// update statuses
 			for(int i=0;i<projects.size();i++){
-				updateStatus(path, projects.get(i));
+				updateStatus(path, projects.get(i), quiet);
 				closeProcess();
 			}
 				
@@ -46,7 +53,7 @@ class Inspector{
 		}
 	}
 	
-	public void updateStatus(String path, String projectName){
+	public void updateStatus(String path, String projectName, Boolean quiet){
 		String cmd = "cd "+ path+"/"+ projectName + " && git status; exit\n";
 		String branch = "";
 		String projectStatus = "";
@@ -54,13 +61,15 @@ class Inspector{
 		try{
 			process = Runtime.getRuntime().exec("/bin/bash");
 			
-			gitBot.robotLog("Inspecting " + path);
+			if(!quiet) gitBot.robotLog("Refreshing " + path);
 			
 			process.getOutputStream().write( cmd.getBytes() );
 		    process.getOutputStream().flush();
 			BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			while ((line = input.readLine()) != null) {
-				gitBot.robotLog(line);
+				
+				// noisy
+				//gitBot.showLog(line);
 				
 				
 				// parse output
@@ -91,6 +100,8 @@ class Inspector{
 				Object[] row = { projectName, branch, projectStatus };
 				gitBot.tableView.data.addRow(row);
 			}
+			
+			if(!quiet) gitBot.robotLog("Scanning Complete! ");
 			
 		}catch (IOException err) { 
 			gitBot.robotLog("Inspector.updateStatus("+path+")" + err.getMessage());

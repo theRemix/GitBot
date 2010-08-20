@@ -11,13 +11,13 @@ import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.BorderLayout;
-import java.io.File;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.Scanner;
 public class GitBot implements ActionListener{
 	private static final String APP_TITLE = "GitBot";
 	private static final String APP_VERSION = "v0.1";
 	private static final String REFRESH_BUT_LABEL = "Refresh";
+	private static final String STATUS_BUT_LABEL = "Status";
 	private static final String PULL_BUT_LABEL = "Pull";
 	private static final String PULL_ALL_BUT_LABEL = "Pull All";
 	private static final String PUSH_BUT_LABEL = "Push";
@@ -53,12 +53,15 @@ public class GitBot implements ActionListener{
 	public TableView tableView;
 	private JToolBar toolBar;
 	private JButton refreshBut;
+	private JButton statusBut;
 	private JButton pullBut;
 	private JButton pullAllBut;
 	private JButton pushBut;
 	private JButton pushAllBut;
 	private JButton	settingsBut; // temp? want this in File... menu
 	private JTextArea statusTextArea;
+	private Process process;
+	private String line;
 	
 	public void readSettings(){
 		String readpath = "";
@@ -96,19 +99,27 @@ public class GitBot implements ActionListener{
 		
 		// buttons for ui
 		refreshBut = new JButton(REFRESH_BUT_LABEL);
-		toolBar.add(refreshBut);
 		refreshBut.addActionListener(this);
+		toolBar.add(refreshBut);
+		
+		statusBut = new JButton(STATUS_BUT_LABEL);
+		statusBut.addActionListener(this);
+		toolBar.add(statusBut);
 		
 		pullBut = new JButton(PULL_BUT_LABEL);
+		pullBut.addActionListener(this);
 		toolBar.add(pullBut);
 		
 		pullAllBut = new JButton(PULL_ALL_BUT_LABEL);
+		pullAllBut.addActionListener(this);
 		toolBar.add(pullAllBut);
 		
 		pushBut = new JButton(PUSH_BUT_LABEL);
+		pushBut.addActionListener(this);
 		toolBar.add(pushBut);
 		
 		pushAllBut = new JButton(PUSH_ALL_BUT_LABEL);
+		pushAllBut.addActionListener(this);
 		toolBar.add(pushAllBut);
 		
 		settingsBut = new JButton("Settings");
@@ -146,6 +157,16 @@ public class GitBot implements ActionListener{
 			askUserToSetPath();
         }else if(e.getSource() == refreshBut){
 			inspector.scan(path);
+		}else if(e.getSource() == statusBut){
+			getStatus();
+		}else if(e.getSource() == pullBut){
+			pullSelectedRepos();
+		}else if(e.getSource() == pullAllBut){
+			pullAllRepos();
+		}else if(e.getSource() == pushBut){
+			pushSelectedRepos();
+		}else if(e.getSource() == pushAllBut){
+			pushAllRepos();
 		}
 	}
 	
@@ -175,6 +196,104 @@ public class GitBot implements ActionListener{
 		
 		robotLog("Projects path is "+path);
 		inspector.scan(path);
+	}
+	
+	private void getStatus(){
+		String projectName = tableView.data.getValueAt(tableView.table.getSelectedRow(), 0).toString();
+		String cmd = "cd "+ path+"/"+ projectName + " && git status; exit\n";
+		try{
+			process = Runtime.getRuntime().exec("/bin/bash");
+			
+			robotLog("Getting status on " + projectName);
+			
+			process.getOutputStream().write( cmd.getBytes() );
+		    process.getOutputStream().flush();
+			BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			while ((line = input.readLine()) != null) {
+				showLog(line);
+			}
+			closeProcess();
+			
+		}catch (IOException err) { 
+			robotLog("GitBot.status("+projectName+")" + err.getMessage());
+		}
+	}
+	
+	private void pullRepo(String projectName){
+		String cmd = "cd "+ path+"/"+ projectName + " && git pull; exit\n";
+		try{
+			process = Runtime.getRuntime().exec("/bin/bash");
+			
+			robotLog("Pulling " + projectName);
+			
+			process.getOutputStream().write( cmd.getBytes() );
+		    process.getOutputStream().flush();
+			BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			while ((line = input.readLine()) != null) {
+				showLog(line);
+			}
+			closeProcess();
+			
+		}catch (IOException err) { 
+			robotLog("GitBot.pull("+projectName+")" + err.getMessage());
+		}
+		
+		inspector.scan(path);
+	}
+	private void pullSelectedRepos(){
+		int[] rows = tableView.table.getSelectedRows();
+		for(int i=0;i<rows.length;i++){
+			pullRepo(tableView.data.getValueAt(rows[i], 0).toString());
+		}
+	}
+	private void pullAllRepos(){
+		int num_rows = tableView.data.getRowCount();
+		for(int i=0;i<num_rows;i++){
+			pullRepo(tableView.data.getValueAt(i, 0).toString());
+		}
+	}
+	
+	private void pushRepo(String projectName){
+		String cmd = "cd "+ path+"/"+ projectName + " && git push; exit\n";
+		try{
+			process = Runtime.getRuntime().exec("/bin/bash");
+			
+			robotLog("Pulling " + projectName);
+			
+			process.getOutputStream().write( cmd.getBytes() );
+		    process.getOutputStream().flush();
+			BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			while ((line = input.readLine()) != null) {
+				showLog(line);
+			}
+			closeProcess();
+			
+		}catch (IOException err) { 
+			robotLog("GitBot.push("+projectName+")" + err.getMessage());
+		}
+		
+		inspector.scan(path);
+	}
+	private void pushSelectedRepos(){
+		int[] rows = tableView.table.getSelectedRows();
+		for(int i=0;i<rows.length;i++){
+			pushRepo(tableView.data.getValueAt(rows[i], 0).toString());
+		}
+	}
+	private void pushAllRepos(){
+		int num_rows = tableView.data.getRowCount();
+		for(int i=0;i<num_rows;i++){
+			pushRepo(tableView.data.getValueAt(i, 0).toString());
+		}
+	}
+	
+	private void closeProcess(){
+		try{
+			process.waitFor();
+		}catch(InterruptedException err){
+			robotLog("GitBot.process.waitFor() " + err.getMessage());
+		}
+		process.destroy();
 	}
 	
 	public void showLog(String message){

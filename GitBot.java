@@ -264,7 +264,7 @@ public class GitBot implements ActionListener{
 		try{
 			process = Runtime.getRuntime().exec("/bin/bash");
 			
-			robotLog("Pulling " + projectName);
+			robotLog("Pushing " + projectName);
 			
 			process.getOutputStream().write( cmd.getBytes() );
 		    process.getOutputStream().flush();

@@ -13,9 +13,15 @@ Can also run simple git commands
 + *Push All* - _git push_ on all projects
 + *Settings* - choose the directory that holds all your git projects
 
+Splash screen created by [pnpnt](http://pnpnt.com)  
+![Splash screen for GitBot](http://remixtechnology.com/assets/2010/8/20/splash.png)
 
-Screenshot of GitBot v0.1
-![Screenshot of GitBot v0.1](http://remixtechnology.com/assets/2010/8/20/Screen_shot_2010-08-20_at_12.25.08_AM.png)
+Screenshot of GitBot running  
+![Screenshot of GitBot running](http://remixtechnology.com/assets/2010/8/20/Screen_shot_2010-08-20_at_12.25.08_AM.png)
+
+Screenshot of GitBot showing status  
+![Screenshot of GitBot showing status](http://remixtechnology.com/assets/2010/8/20/Screen_shot_2010-08-20_at_12.44.48_AM.png)
+
 
 ## ToDo  
 + Add splash screen

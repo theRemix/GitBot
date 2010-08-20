@@ -92,7 +92,6 @@ public class GitBot implements ActionListener{
         JFrame frame = new JFrame(APP_TITLE + " " + APP_VERSION);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
-        frame.setVisible(true);
 		frame.setMinimumSize(new Dimension(APP_MIN_WIDTH, APP_MIN_HEIGHT));
 		frame.setPreferredSize(new Dimension(APP_INIT_WIDTH, APP_INIT_HEIGHT));;
 		frame.setLocation(APP_INIT_X,APP_INIT_Y);
@@ -156,6 +155,8 @@ public class GitBot implements ActionListener{
 		// setup scanner
 		inspector = new Inspector(gitBot);
 		readSettings();
+		
+		frame.setVisible(true);
 	}
 	
 	public void actionPerformed(ActionEvent e) {

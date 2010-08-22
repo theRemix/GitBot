@@ -24,9 +24,11 @@ Screenshot of GitBot showing status
 
 
 ## ToDo  
-+ Add splash screen
++ -Add splash screen-
 + Use nohup to see if i can refresh all repos simultaneously
-+ Make Jar file
-+ Add an app icon
++ -Make Jar file-
++ Add an app icon - native packager?
 + Non clean projects have different row colors 
 + Open project in term or GitX
++ git clone
++ display progress / waiting / distractor

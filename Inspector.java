@@ -6,6 +6,7 @@ class Inspector{
 	private static final String STATE_HAS_CHANGES = "Has Modified Files ";
 	private static final String STATE_HAS_CHANGES_TO_COMMIT = "Has Files Added to Commit ";
 	private static final String STATE_HAS_COMMITS_TO_PUSH = "Has Commits to Push! ";
+	private static final String STATE_HAS_UPDATES = "Can be updated! ";
 	
 	private GitBot gitBot;
 	private Process process;
@@ -55,11 +56,11 @@ class Inspector{
 	}
 	
 	public void updateStatus(String path, String projectName, Boolean quiet){
-		String cmd = "cd "+ path+"/"+ projectName + " && git status; exit\n";
+		String cmd = "cd "+ path+"/"+ projectName + " && git fetch; git status; exit\n";
 		String branch = "";
 		String projectStatus = "";
 		int countModified = 0;
-		int versionsAhead = 0;
+		int versionsApart = 0;
 		try{
 			process = Runtime.getRuntime().exec("/bin/bash");
 			
@@ -82,24 +83,28 @@ class Inspector{
 						countModified++;
 					}
 					if(line.startsWith("# Your branch is ahead")){
-						versionsAhead = Integer.parseInt(line.substring(line.lastIndexOf("by ")+3, line.lastIndexOf(" commit")));
-						// gitBot.robotLog(line);
-						// gitBot.robotLog(Integer.toString(line.length()));
-						// gitBot.robotLog(Integer.toString());
-						// gitBot.robotLog(Integer.toString(line.lastIndexOf(" commit")));
+						versionsApart = Integer.parseInt(line.substring(line.lastIndexOf("by ")+3, line.lastIndexOf(" commit")));
 						projectStatus = STATE_HAS_COMMITS_TO_PUSH;
 					}
-					if(line.startsWith("# Changes to be committed") && 
+					if(line.startsWith("# Your branch is behind") && 
 						projectStatus != STATE_HAS_COMMITS_TO_PUSH){
+						versionsApart = Integer.parseInt(line.substring(line.lastIndexOf("by ")+3, line.lastIndexOf(" commit")));
+						projectStatus = STATE_HAS_UPDATES;
+					}
+					if(line.startsWith("# Changes to be committed") && 
+						projectStatus != STATE_HAS_COMMITS_TO_PUSH &&
+						projectStatus != STATE_HAS_UPDATES){
 						projectStatus = STATE_HAS_CHANGES_TO_COMMIT;
 					}
 					if(line.startsWith("# Changed but not updated")  && 
-						projectStatus != STATE_HAS_COMMITS_TO_PUSH  && 
+						projectStatus != STATE_HAS_COMMITS_TO_PUSH &&
+						projectStatus != STATE_HAS_UPDATES &&
 						projectStatus != STATE_HAS_CHANGES_TO_COMMIT){
 						projectStatus = STATE_HAS_CHANGES;
 					}
 					if(line.startsWith("nothing to commit (working directory clean)") &&
 						projectStatus != STATE_HAS_COMMITS_TO_PUSH  && 
+						projectStatus != STATE_HAS_UPDATES &&
 						projectStatus != STATE_HAS_CHANGES_TO_COMMIT &&
 						projectStatus != STATE_HAS_CHANGES){
 						projectStatus = STATE_CLEAN;
@@ -108,8 +113,8 @@ class Inspector{
 			}
 			
 			if(countModified>0){
-				if(projectStatus == STATE_HAS_COMMITS_TO_PUSH){
-					projectStatus += "("+String.valueOf(versionsAhead)+")";
+				if(projectStatus == STATE_HAS_COMMITS_TO_PUSH || projectStatus == STATE_HAS_UPDATES){
+					projectStatus += "("+String.valueOf(versionsApart)+")";
 				}else{
 					projectStatus += "("+String.valueOf(countModified)+")";
 				}

@@ -1,3 +1,7 @@
+/*
+	java -Xdock:name="GitBot" -Xdock:icon=icon_128x128.png -splash:splash.png 'GitBot'
+
+*/
 import javax.swing.JFrame;
 import javax.swing.JButton;
 import javax.swing.JToolBar;

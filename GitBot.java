@@ -1,6 +1,9 @@
 /*
 	java -Xdock:name="GitBot" -Xdock:icon=icon_128x128.png -splash:splash.png 'GitBot'
-
+	jar cvfm GitBot.jar manifest *.class splash.png
+	See README.mkd
+	See doc/index.html
+	See doc/CSCI 2912 Final Project.pdf
 */
 import javax.swing.JFrame;
 import javax.swing.JButton;
@@ -19,7 +22,7 @@ import java.io.*;
 import java.util.Scanner;
 public class GitBot implements ActionListener{
 	private static final String APP_TITLE = "GitBot";
-	private static final String APP_VERSION = "v0.1";
+	private static final String APP_VERSION = "v0.2";
 	private static final String REFRESH_BUT_LABEL = "Refresh";
 	private static final String STATUS_BUT_LABEL = "Status";
 	private static final String PULL_BUT_LABEL = "Pull";
@@ -47,6 +50,12 @@ public class GitBot implements ActionListener{
 		    }
 		});
 	}
+	
+	/**
+	* Get the instance of GitBot object
+	* 
+	* @return  the single instance of GitBot
+	*/
 	public static GitBot getInstance(){
 		if(instance == null){
 			instance = new GitBot();
@@ -71,6 +80,15 @@ public class GitBot implements ActionListener{
 	private Process process;
 	private String line;
 	
+	/**
+	* Reads the settings file (located at SETTINGS_FILE_PATH)
+	* and sets variable "path" with the configuration found in this file
+	* if the file doesn't exist, will ask the user to set the "path"
+	* by running method askUserToSetPath()
+	* 
+	* @see File
+	* @see SETTINGS_FILE_PATH
+	*/
 	public void readSettings(){
 		String readpath = "";
 		try{
@@ -87,8 +105,13 @@ public class GitBot implements ActionListener{
 		System.out.print(path);
 	}
 	
-	
-	//http://download.oracle.com/javase/tutorial/uiswing/examples/components/SimpleTableDemoProject/src/components/SimpleTableDemo.java
+	/**
+	* Initializes the swing objects for ui and the Inspector object
+	* For thread safety, this method should be invoked from the
+	* event-dispatching thread.
+	* from: http://download.oracle.com/javase/tutorial/uiswing/examples/components/SimpleTableDemoProject/src/components/SimpleTableDemo.java
+	* 
+	*/
 	private void init(){
 		GitBot gitBot = GitBot.getInstance();
 		
@@ -163,6 +186,12 @@ public class GitBot implements ActionListener{
 		frame.setVisible(true);
 	}
 	
+	/**
+	* Event handler when JButton action is invoked
+	* 
+	* @param ActionEvent object
+	* @see ActionEvent
+	*/
 	public void actionPerformed(ActionEvent e) {
         if (e.getSource() == settingsBut) {
 			askUserToSetPath();
@@ -181,6 +210,13 @@ public class GitBot implements ActionListener{
 		}
 	}
 	
+	/**
+	* Opens a JFileChooser that asks the user to choose a directory 
+	* that contains git repositories. this sets the "path" variable
+	* using the setNewPath() method.
+	* 
+	* @see JFileChooser
+	*/
 	private void askUserToSetPath(){
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.setDialogTitle(SETTINGS_FILE_CHOOSER_TITLE);
@@ -193,6 +229,11 @@ public class GitBot implements ActionListener{
         }
 	}
 	
+	/**
+	* Sets the variable "path" to _path
+	* 
+	* @param _path  the filesystem path
+	*/
 	private void setNewPath(String _path){
 		path = _path;
 		
@@ -209,6 +250,10 @@ public class GitBot implements ActionListener{
 		inspector.scan(path);
 	}
 	
+	/**
+	* Prints the results of 'git status' on the selected row in the table
+	*
+	*/
 	private void getStatus(){
 		String projectName = tableView.data.getValueAt(tableView.table.getSelectedRow(), 0).toString();
 		String cmd = "cd "+ path+"/"+ projectName + " && git status; exit\n";
@@ -230,6 +275,11 @@ public class GitBot implements ActionListener{
 		}
 	}
 	
+	/**
+	* Runs 'git pull' on projectName
+	*
+	* @param projectName	the name of the git project to pull
+	*/
 	private void pullRepo(String projectName){
 		String cmd = "cd "+ path+"/"+ projectName + " && git pull; exit\n";
 		try{
@@ -251,12 +301,21 @@ public class GitBot implements ActionListener{
 		
 		inspector.scan(path);
 	}
+	
+	/**
+	* Runs 'git pull' on the selected rows in the table
+	*
+	*/
 	private void pullSelectedRepos(){
 		int[] rows = tableView.table.getSelectedRows();
 		for(int i=0;i<rows.length;i++){
 			pullRepo(tableView.data.getValueAt(rows[i], 0).toString());
 		}
 	}
+	/**
+	* Runs 'git pull' on all projects
+	*
+	*/
 	private void pullAllRepos(){
 		int num_rows = tableView.data.getRowCount();
 		for(int i=0;i<num_rows;i++){
@@ -264,6 +323,11 @@ public class GitBot implements ActionListener{
 		}
 	}
 	
+	/**
+	* Runs 'git push' on projectName
+	*
+	* @param projectName	the name of the git project to push
+	*/
 	private void pushRepo(String projectName){
 		String cmd = "cd "+ path+"/"+ projectName + " && git push; exit\n";
 		try{
@@ -285,12 +349,22 @@ public class GitBot implements ActionListener{
 		
 		inspector.scan(path);
 	}
+	
+	/**
+	* Runs 'git push' on the selected rows in the table
+	*
+	*/
 	private void pushSelectedRepos(){
 		int[] rows = tableView.table.getSelectedRows();
 		for(int i=0;i<rows.length;i++){
 			pushRepo(tableView.data.getValueAt(rows[i], 0).toString());
 		}
 	}
+	
+	/**
+	* Runs 'git push' on all projects
+	*
+	*/
 	private void pushAllRepos(){
 		int num_rows = tableView.data.getRowCount();
 		for(int i=0;i<num_rows;i++){
@@ -298,6 +372,10 @@ public class GitBot implements ActionListener{
 		}
 	}
 	
+	/**
+	* Closes and destroys process after all commands have exited
+	*
+	*/
 	private void closeProcess(){
 		try{
 			process.waitFor();
@@ -307,16 +385,32 @@ public class GitBot implements ActionListener{
 		process.destroy();
 	}
 	
+	/**
+	* Appends command line output messages to the console
+	*
+	* @param message	the message to add to the console
+	*/
 	public void showLog(String message){
 		statusTextArea.append("\n"+message);
 		updateCaret();
 	}
+	/**
+	* Appends a system message to the console
+	* also echos to stdout
+	*
+	* @param message	the message to add to the console
+	*/
 	public void robotLog(String message){
 		String msg = "\n"+ROBOT_SAYS+message;
 		statusTextArea.append(msg);
 		System.out.println(msg);
 		updateCaret();
 	}
+	
+	/**
+	* Scrolls the console to the bottom when messages are added
+	* 
+	*/
 	private void updateCaret(){
 		statusTextArea.setCaretPosition(statusTextArea.getText().length());
 	}

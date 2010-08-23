@@ -14,6 +14,12 @@ class TableView {
 	public DefaultTableModel data;
 	public JTable table;
 	
+	/**
+	* TableView Constructor
+	*
+	* @param _gitBot	the instance of GitBot
+	* @see GitBot
+	*/
 	public TableView(GitBot _gitBot)
 	{
 		gitBot = _gitBot;
@@ -37,6 +43,10 @@ class TableView {
 		table.setSelectionBackground(Color.ORANGE);
 	}
 	
+	/**
+	* Clears all rows in the table
+	*
+	*/
 	public void clear()
 	{
 		int l = data.getRowCount();

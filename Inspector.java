@@ -12,19 +12,43 @@ class Inspector{
 	private Process process;
 	private String line;
 	
+	/**
+	* Inspector Constructor
+	*
+	* @param _gitBot	the instance of GitBot
+	* @see GitBot
+	*/
 	public Inspector(GitBot _gitBot)
 	{
 		super();
 		gitBot = _gitBot;
 	}
 	
+	/**
+	* Runs method scanProjects with option 'quiet' enabled
+	*
+	* @param path	projects path to scan
+	*/
 	public void scan(String path){
 		scanProjects(path, true);
 	}
+	
+	/**
+	* Runs method scanProjects with optional verbose param
+	*
+	* @param path	projects path to scan
+	* @param verbose	true will print all output to console
+	*/
 	public void scan(String path, Boolean verbose){
 		scanProjects(path, !verbose);
 	}
 	
+	/**
+	* Runs 'git status' on each repository in projects directory
+	*
+	* @param path	projects path to scan
+	* @param quiet	true will supress all output
+	*/
 	private void scanProjects(String path, Boolean quiet){
 		try{
 			process = Runtime.getRuntime().exec("/bin/bash");
@@ -55,6 +79,13 @@ class Inspector{
 		}
 	}
 	
+	/**
+	* Runs 'git status' on projectName in projects directory defined by path
+	*
+	* @param path	projects path to scan
+	* @param projectName	name of project to update
+	* @param quiet	true will supress all output
+	*/
 	public void updateStatus(String path, String projectName, Boolean quiet){
 		String cmd = "cd "+ path+"/"+ projectName + " && git fetch; git status; exit\n";
 		String branch = "";
@@ -139,6 +170,10 @@ class Inspector{
 		}
 	}
 	
+	/**
+	* Closes and destroys process after all commands have exited
+	*
+	*/
 	private void closeProcess(){
 		try{
 			process.waitFor();

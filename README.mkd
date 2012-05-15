@@ -24,6 +24,7 @@ Screenshot of GitBot showing status
 
 
 ## ToDo  
++ Add status for "# Your branch and 'origin/master' have diverged"
 + -Add splash screen-
 + Use nohup to see if i can refresh all repos simultaneously
 + -Make Jar file-
